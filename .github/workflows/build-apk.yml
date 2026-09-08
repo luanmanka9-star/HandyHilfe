@@ -30,8 +30,18 @@ jobs:
         with:
           gradle-version: '9.3.1'
 
+      - name: Dateien anzeigen
+        run: ls -la
+
       - name: Projekt entpacken
-        run: unzip -q HandyHilfe_v1_AndroidStudio.zip
+        run: |
+          ZIP_FILE=$(find . -maxdepth 1 -type f -name "*.zip" | head -n 1)
+          echo "Gefundene ZIP: $ZIP_FILE"
+          test -n "$ZIP_FILE"
+          unzip -q "$ZIP_FILE"
+
+      - name: Entpackte Dateien anzeigen
+        run: find . -maxdepth 2 -type f | head -100
 
       - name: APK bauen
         working-directory: HandyHilfeAndroid
