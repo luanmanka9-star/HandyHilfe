@@ -1,0 +1,44 @@
+name: Build HandyHilfe APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Projekt laden
+        uses: actions/checkout@v4
+
+      - name: Java installieren
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Android installieren
+        uses: android-actions/setup-android@v3
+
+      - name: Android SDK 36 installieren
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Gradle installieren
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Projekt entpacken
+        run: unzip -q HandyHilfe_v1_AndroidStudio.zip
+
+      - name: APK bauen
+        working-directory: HandyHilfeAndroid
+        run: gradle :app:assembleDebug
+
+      - name: APK bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: HandyHilfe-APK
+          path: HandyHilfeAndroid/app/build/outputs/apk/debug/app-debug.apk
